@@ -18,6 +18,9 @@ const StyleControlComponent = () => {
     circle: { borderRadius: '50%' },
     ellipse: { borderRadius: '50%', width: '300px', height: '150px' },
     triangle: {
+      position: "relative",
+      border: "none",
+      backgroundColor: "transparent",
       width: '300px',
       height: '300px',
       clipPath: 'polygon(0% 100%, 50% 0%, 100% 100%)'
@@ -30,6 +33,13 @@ const StyleControlComponent = () => {
       justifyContent: vertical === 'top' ? 'flex-start' : vertical === 'bottom' ? 'flex-end' : 'center',
       alignItems: horizontal === 'left' ? 'flex-start' : horizontal === 'right' ? 'flex-end' : 'center',
     };
+  };
+
+  const getTextPosition = (position: string) => {
+    const [vertical, horizontal] = position.split(' ');
+    const x = horizontal === 'left' ? 10 : horizontal === 'right' ? 290 : 150;
+    const y = vertical === 'top' ? 20 : vertical === 'bottom' ? 280 : 150;
+    return { x, y };
   };
 
   const targetStyle = {
@@ -117,7 +127,30 @@ const StyleControlComponent = () => {
       </div>
       <div className="col-span-2 p-4 mx-40 space-y-4">
         <div style={targetStyle as CSSProperties}>
-          <span style={{ fontSize: `${fontSize}px`, color: fontColor }}>{text}</span>
+          {
+            shape === "triangle" ? (
+              <svg viewBox="0 0 300 300" style={{ width: '100%', height: '100%' }}>
+                <polygon
+                  points="150,0 0,300 300,300"
+                  fill={backgroundColor}
+                  stroke={borderColor}
+                  strokeWidth={borderSize}
+                />
+                <text
+                  x={getTextPosition(textPosition).x}
+                  y={getTextPosition(textPosition).y}
+                  fontSize={`${fontSize}px`}
+                  fill={fontColor}
+                  textAnchor={textPosition.includes('center') ? 'middle' : textPosition.includes('right') ? 'end' : 'start'}
+                  dominantBaseline={textPosition.includes('center') ? 'middle' : textPosition.includes('bottom') ? 'text-after-edge' : 'text-before-edge'}
+                >
+                  {text}
+                </text>
+              </svg>
+            ) : (
+              <span style={{ fontSize: `${fontSize}px`, color: fontColor }}>{text}</span>
+            )
+          }
         </div>
       </div>
     </div>
